@@ -199,5 +199,6 @@ Sometimes the ask isn't one skill, it's a batch: a stack of SOPs to convert, a w
 ## Scripts in this skill
 
 - `scripts/scaffold_skills.py` - generates starter folders for a batch of skills from a JSON list of specs. Run it when you're building many skills at once and the specs (name, description, shape) are settled. See "Building many skills at once" above.
+- `scripts/example_specs.json` - a sample specs file showing the JSON format `scaffold_skills.py` expects, with three example skills of varying shapes. Copy it, edit the specs, and run the scaffolder.
 
 Read the reference files when the moment calls for them, per progressive disclosure - not all upfront. Now go build the thing.

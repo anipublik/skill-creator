@@ -34,7 +34,8 @@ skill-forge/
 │   ├── reference.template.md         # Starter reference file with a table-of-contents stub
 │   └── script.template.py            # Starter script with a documented input/output contract
 ├── scripts/
-│   └── scaffold_skills.py            # Generates starter folders for a batch of skills from a JSON spec list
+│   ├── scaffold_skills.py            # Generates starter folders for a batch of skills from a JSON spec list
+│   └── example_specs.json            # Sample specs file showing the expected JSON format
 └── README.md                         # This file
 ```
 
@@ -90,6 +91,8 @@ The `templates/` folder has starters you can copy and adapt:
   ```
   python3 scripts/scaffold_skills.py specs.json --out ./skills
   ```
+
+- **`example_specs.json`**: a sample specs file with three example skills of varying shapes (single file, body + assets, body + references + scripts). Copy it, edit the specs to match your batch, and run the scaffolder.
 
 ## License
 

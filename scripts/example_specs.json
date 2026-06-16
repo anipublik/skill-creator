@@ -1,0 +1,23 @@
+[
+  {
+    "name": "invoice-parser",
+    "description": "Extract structured line items from PDF and image invoices into a clean spreadsheet. Use whenever someone uploads an invoice, receipt, or bill and wants the amounts, dates, vendor, or line items pulled out, tabulated, totaled, or reconciled - even if they just say \"get the numbers out of this\" or \"what did we spend here.\" Do not use for bank statements or tax forms; those are different tasks.",
+    "references": ["vendor-formats", "edge-cases"],
+    "scripts": ["parse_invoice"],
+    "assets": ["output-template.csv"]
+  },
+  {
+    "name": "meeting-notes",
+    "description": "Turn rough meeting notes or transcripts into clean, structured summaries with action items, owners, and due dates. Use whenever someone shares notes, a transcript, or a recording and wants it organized, summarized, or turned into follow-ups - including vague asks like \"clean up what I wrote down\" or \"what did we decide in that meeting.\"",
+    "references": [],
+    "scripts": [],
+    "assets": ["summary-template.md"]
+  },
+  {
+    "name": "cloud-deploy",
+    "description": "Guide a deployment to AWS, GCP, or Azure from start to finish, including config validation and rollback steps. Use whenever someone wants to deploy an app, service, or function to a cloud provider, or asks about deployment configs, environment variables, or CI/CD setup for cloud targets - even if they just say \"put this online\" or \"how do I ship this to the cloud.\" Do not use for local dev setup or Docker-only workflows.",
+    "references": ["aws", "gcp", "azure"],
+    "scripts": ["validate_config"],
+    "assets": []
+  }
+]
