@@ -1,98 +1,111 @@
-# Skill Forge
+# Skill and Agent Forge
 
-Skill Forge helps you build portable AI skills, one at a time or in a batch. Give it a rough idea or a workflow you keep re-explaining, and it gives you back a folder of instructions and resources that any capable AI can load and follow to do a task well, consistently, every time. Give it a whole stack of workflows, and it builds a coherent library instead of a pile of one-offs.
+This repository contains two portable builders:
 
-It's a skill for making skills.
+- `skill/` helps you turn knowledge, workflows, and repeated tasks into reusable AI skills.
+- `agent/` helps you turn a role, goal, or set of responsibilities into a focused AI agent with clear tools, permissions, boundaries, and handoffs.
 
-## What a skill is
+Use either folder on its own, or use both to build an agent that is composed from reusable skills.
 
-A skill is a folder with at least one file, `SKILL.md`. That file has a small metadata block (name and description) followed by a playbook written for an AI to execute. It can also include supporting files in three folders:
+## Skill or agent?
 
-| Folder | What's in it | When the AI uses it |
+A skill and an agent are not interchangeable.
+
+| | Skill | Agent |
 |---|---|---|
-| `references/` | Deep detail, edge cases, lookup tables, per-variant specs | Only when the workflow routes to it |
-| `scripts/` | Deterministic code: parsers, validators, converters, generators | When the workflow calls it |
-| `assets/` | Templates, boilerplate, config stubs, media | When the output is built from it |
+| Main question | How should this task be done? | Who owns this outcome and what may it do? |
+| Purpose | Reusable expertise for a type of task | Ongoing responsibility for a goal |
+| Behavior | Runs when invoked | Observes, decides, acts, verifies, and stops or escalates |
+| Usually contains | Instructions, references, scripts, assets | Mission, responsibilities, skills, workflows, tools, state, boundaries, handoffs |
+| Best for | Reviewing code, parsing invoices, writing reports | Managing releases, handling support cases, coordinating an operational process |
 
-The core idea is **progressive disclosure**. Load information in layers, cheapest first, and only pull in the heavy stuff when the task actually needs it.
+Choose a **skill** when you need repeatable know-how. Choose an **agent** when something must own an outcome across multiple steps, select capabilities, operate tools, and work within explicit authority.
 
-- **Layer 1, the description** (metadata block): always loaded. Its only job is to make the AI recognize that this task is one it should use this skill for.
-- **Layer 2, the `SKILL.md` body**: loaded when the skill triggers. The main playbook with the workflow, rules, decision logic, and small examples. Try to keep it under ~500 lines.
-- **Layer 3, bundled resources**: loaded or run only when the workflow reaches for them. Unlimited detail, zero cost until needed.
+Do not create an agent for every prompt. If the work is one-shot and needs no tools, state, approvals, or ongoing decisions, a skill is simpler and easier to reuse.
+
+### How they work together
+
+Agents should compose skills instead of copying their instructions. For example:
+
+```text
+release-manager agent
+├── release-notes skill
+├── risk-review skill
+├── production-release workflow
+└── rollback workflow
+```
+
+The agent owns the release outcome. Skills explain how to perform specific tasks. Workflows preserve required order, checks, and approvals.
 
 ## Repository structure
 
-```
+```text
 skill-forge/
-├── SKILL.md                          # The skill itself: the 7-phase build process, plus batch guidance
-├── references/
-│   ├── anatomy.md                    # File layouts, the multi-variant pattern, how layers load
-│   ├── descriptions.md               # Writing the description field so the skill triggers correctly
-│   └── portability.md                # Keeping a skill vendor-agnostic and degrading gracefully
-├── templates/
-│   ├── SKILL.template.md             # Starter SKILL.md with structure as prompts
-│   ├── reference.template.md         # Starter reference file with a table-of-contents stub
-│   └── script.template.py            # Starter script with a documented input/output contract
-├── scripts/
-│   ├── scaffold_skills.py            # Generates starter folders for a batch of skills from a JSON spec list
-│   └── example_specs.json            # Sample specs file showing the expected JSON format
-└── README.md                         # This file
+├── skill/
+│   ├── SKILL.md                       # Playbook for designing one skill or a skill library
+│   ├── references/
+│   │   ├── anatomy.md                 # Skill layouts and progressive disclosure
+│   │   ├── descriptions.md            # Trigger descriptions and collision testing
+│   │   └── portability.md             # Cross-platform design and fallbacks
+│   ├── templates/
+│   │   ├── SKILL.template.md
+│   │   ├── reference.template.md
+│   │   └── script.template.py
+│   └── scripts/
+│       ├── scaffold_skills.py         # Batch skill scaffolder
+│       └── example_specs.json         # Example input for the scaffolder
+├── agent/
+│   ├── AGENT.md                       # Playbook for designing one agent or an agent system
+│   ├── references/
+│   │   └── anatomy.md                 # Tools, state, handoffs, composition, and portability
+│   └── templates/
+│       └── AGENT.template.md          # Starter agent operating contract
+└── README.md
 ```
 
-## The build process
+## Use the skill creator
 
-`SKILL.md` walks through seven phases in order:
+Load `skill/SKILL.md` into your AI tool or upload the entire `skill/` folder. If a registry expects `SKILL.md` at the package root, upload the `skill/` folder itself rather than the whole repository.
 
-1. **Interview.** Understand the task before writing anything. What should the skill do, when should it trigger, what does good output look like, what are the steps, what varies, what resources exist, what tools are needed.
-2. **Choose the shape.** Decide the file layout: single file, body + references, body + scripts, body + assets, or the works. Start smaller than you think.
-3. **Write the `SKILL.md`.** Metadata block first (name and description), then the body. Explain the *why*, write in the imperative, show don't just tell, generalize past your examples, stay lean, point clearly to resources.
-4. **Write the bundled files.** Only the files the chosen shape calls for. References, scripts, and assets each have their own guidelines.
-5. **Test it, at least by hand.** Invent realistic prompts, follow the skill fresh as written, probe whether the description triggers correctly and whether the skill generalizes.
-6. **Iterate.** Generalize from feedback, cut before you add, watch for repeated work that should become a script, re-read with fresh eyes.
-7. **Package and hand off.** Deliver the skill folder, zipped or printed file-by-file with paths.
+Use requests such as:
 
-## Building at scale
+- "Turn this workflow into a reusable skill."
+- "Package this process so an AI follows it consistently."
+- "Build a skill for each of these SOPs."
+- "Create a shared skill library for the team."
 
-Skill Forge isn't limited to one skill per run. For a batch of workflows, SOPs, or a whole team's processes, it interviews across the set instead of one at a time, checks the draft descriptions against each other so two skills don't end up fighting over the same trigger phrases, keeps naming and structure consistent, and can scaffold all the folders at once with `scripts/scaffold_skills.py`. See "Building many skills at once" in `SKILL.md` for the full approach.
+The creator interviews you, chooses the smallest useful layout, writes the files, tests realistic prompts, and packages the result. It also handles batches, naming consistency, and trigger collisions across a skill library.
 
-## Key principles
+## Use the agent creator
 
-- **The description is the most important sentence in the whole skill.** It alone determines whether the skill ever gets used. Pack it with concrete trigger cues: the situations and phrasings (including casual, keyword-free ones) that mean "use this now." See `references/descriptions.md`.
-- **Explain the why, not just the what.** An instruction with a reason generalizes. A bare ALL-CAPS rule breaks the moment reality differs.
-- **Start smaller than you think.** It's easier to split a file later than to explain why a simple skill became a directory tree.
-- **Write against capabilities, not vendors.** "Read the uploaded file" is portable. "Use the `view` tool on `/mnt/user-data/uploads/`" is not. See `references/portability.md`.
-- **Degrade gracefully.** Describe the ideal path, then the fallback. If your skill can be pasted into a plain chat with no tools and still produce a good result, it's genuinely portable.
+Load `agent/AGENT.md` into your AI tool or provide the entire `agent/` folder. Then describe the role or outcome you want the agent to own.
 
-## How to use Skill Forge
+Use requests such as:
 
-Load `SKILL.md` into your AI and ask it to build a skill. You can say things like:
+- "Build a release manager agent."
+- "Turn this support role into an AI agent."
+- "Create an agent that reviews invoices and escalates exceptions."
+- "Design a team of agents for this operational process."
 
-- "Turn this workflow into a reusable skill"
-- "Package this process so the AI does it consistently"
-- "Build me a reusable prompt for X"
-- "I keep re-explaining this to ChatGPT, make it a skill"
-- "Turn our SOPs into a skill library"
-- "Build a skill for each of these workflows"
+The creator defines the agent's mission, autonomy, tools, permissions, skills, workflows, state, approval gates, failure recovery, and handoffs. It tests normal cases as well as missing data, tool failures, boundary violations, and escalation paths.
 
-The AI will interview you, choose a shape, write the files, test them, iterate, and hand off a packaged skill folder (or a whole set of them).
+`AGENT.md` is this repository's portable source format. Agent platforms do not all use the same filename or schema, so the final package may need a thin adapter for the target platform.
 
-## Templates
+## Templates and batch scaffolding
 
-The `templates/` folder has starters you can copy and adapt:
+Copy `skill/templates/SKILL.template.md` when you already understand the skill and only need the file structure. Copy `agent/templates/AGENT.template.md` when you already understand the role and need a structured operating contract.
 
-- **`SKILL.template.md`**: a skeleton `SKILL.md` with the standard sections (when-to-use, workflow, output format, examples, resources) filled in as prompts.
-- **`reference.template.md`**: a skeleton reference file with a table-of-contents stub.
-- **`script.template.py`**: a skeleton Python script with a documented input/output contract and a fallback note for AIs that can't run code.
+To scaffold several skills from JSON:
 
-## Scripts
+```bash
+python3 skill/scripts/scaffold_skills.py skill/scripts/example_specs.json --out ./generated-skills
+```
 
-- **`scaffold_skills.py`**: takes a JSON file listing skill specs (name, description, references, scripts, assets) and generates the folder structure and starter files for all of them at once. Run it once the specs for a batch are settled:
+The script creates starter folders. It does not replace the interview, writing, collision review, or testing in `skill/SKILL.md`.
 
-  ```
-  python3 scripts/scaffold_skills.py specs.json --out ./skills
-  ```
+## Portability
 
-- **`example_specs.json`**: a sample specs file with three example skills of varying shapes (single file, body + assets, body + references + scripts). Copy it, edit the specs to match your batch, and run the scaffolder.
+The files use capabilities and plain-language contracts instead of depending on one vendor's tool names. When a target platform has its own format, keep the portable source and render an adapter for that platform. If the platform lacks required permissions, approvals, state, or handoff controls, reduce the agent's autonomy rather than silently dropping a safeguard.
 
 ## License
 
