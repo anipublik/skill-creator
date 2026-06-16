@@ -1,6 +1,6 @@
 ---
 name: skill-forge
-description: Build a complete, portable AI skill from a rough idea. Use this whenever someone wants to create a skill, capability pack, custom instruction set, agent playbook, or reusable "how-to" file for an AI to follow, or wants to turn a workflow, process, or repeated task into something an AI can do consistently. Trigger this even when the person does not say the word "skill" - phrases like "make the AI do X every time," "turn this workflow into instructions," "package this process," "I keep re-explaining this to ChatGPT," or "build me a reusable prompt for Y" all mean this skill. It produces a folder of files (a SKILL.md plus optional references, scripts, and assets), splitting content across files by how often each part is needed, so the result works in any AI tool, not just one vendor's.
+description: Build a complete, portable AI skill from a rough idea, whether it's one skill or a whole batch of them. Use this whenever someone wants to create a skill, capability pack, custom instruction set, agent playbook, or reusable "how-to" file for an AI to follow, or wants to turn a workflow, process, or repeated task into something an AI can do consistently. Trigger this even when the person does not say the word "skill" - phrases like "make the AI do X every time," "turn this workflow into instructions," "package this process," "I keep re-explaining this to ChatGPT," or "build me a reusable prompt for Y" all mean this skill. Also trigger it for scale asks like "build skills for all of these," "turn our SOPs into a skill library," "set up a suite of skills for the team," or "scaffold a skill for each of these workflows." It produces a folder of files (a SKILL.md plus optional references, scripts, and assets), splitting content across files by how often each part is needed, so the result works in any AI tool, not just one vendor's.
 ---
 
 # Skill forge
@@ -46,6 +46,8 @@ Do not write anything yet. First, understand the task. If the person already des
 7. **What tools does the AI need?** Does the task require running code, web access, file creation, a specific library? Note dependencies so the skill can state them.
 
 Push on edge cases and failure modes here, not later. The interview is cheap. Rewrites are not.
+
+If you're building a batch of skills at once rather than a single one, read "Building many skills at once" near the end of this file before you start interviewing - it changes how you run this phase.
 
 ## Phase 2: Choose the shape
 
@@ -172,6 +174,16 @@ skill-name/
 
 If you are in an environment with a file-delivery mechanism, zip the folder and hand it over. If you are in a plain chat with no file tools, print the full contents of every file, clearly labeled with its path, so the person can save each one into the right place by hand. Either way, tell them where each file goes.
 
+## Building many skills at once
+
+Sometimes the ask isn't one skill, it's a batch: a stack of SOPs to convert, a whole team's workflows, or a library you're growing over time. The phases above still apply to each skill, but run them at the batch level too, or you end up with ten skills that don't feel like they belong together.
+
+- **Batch the interview.** Don't run Phase 1 at full depth for each skill in sequence. First pass: get the one-sentence "what it does" and rough trigger phrasings for every skill in the batch, side by side. This surfaces overlap and gaps you'd miss doing them one at a time. Second pass: go deep - steps, examples, variants - only on the skills that actually need it.
+- **Check for collisions before writing anything.** Once you have draft descriptions for the whole batch, read them together and ask: could two of these fire on the same real request? If an "expense-report" skill and a "receipt-parser" skill would both claim "get the numbers off this receipt," narrow one with an explicit boundary (see `references/descriptions.md`). This check only works with the full set in view - it's worthless done per skill.
+- **Keep naming and shape consistent.** Pick one naming convention and apply it across the batch. Reuse the same shape (Phase 2) for skills that are structurally similar, so the set reads like it was written by one person with one standard, not assembled from ten one-off jobs.
+- **Maintain a catalog.** Past a handful of skills, keep an index: a single file (e.g. `CATALOG.md` at the root of the skills collection) listing each skill's name, one-line description, and folder path. Update it whenever you add or change a skill, and read it before starting a new one - that's how you catch a near-duplicate before you build it instead of after.
+- **Scaffold the boring parts.** Once specs for the batch are settled (name, description, shape, which references/scripts/assets each needs), don't hand-type the same directory tree ten times. Run `scripts/scaffold_skills.py` on a JSON list of specs to generate the folders and starter files, then fill in the real content per skill. If you can't run code, build each folder by hand from `templates/` instead - the scaffolder only saves typing, it doesn't change what a correct skill looks like.
+
 ## Reference files in this skill
 
 - `references/anatomy.md` - the full anatomy of a skill, directory layouts, and the multi-variant organization pattern, with examples.
@@ -183,5 +195,9 @@ If you are in an environment with a file-delivery mechanism, zip the folder and 
 - `templates/SKILL.template.md` - a starter SKILL.md with the structure filled in as prompts.
 - `templates/reference.template.md` - a starter reference file with a table of contents stub.
 - `templates/script.template.py` - a starter script with a documented input/output contract.
+
+## Scripts in this skill
+
+- `scripts/scaffold_skills.py` - generates starter folders for a batch of skills from a JSON list of specs. Run it when you're building many skills at once and the specs (name, description, shape) are settled. See "Building many skills at once" above.
 
 Read the reference files when the moment calls for them, per progressive disclosure - not all upfront. Now go build the thing.
