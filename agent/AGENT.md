@@ -168,6 +168,8 @@ Give the agent a clear loop it can repeat:
 
 Adapt this loop to the role. Do not force it onto a simple advisory agent that never acts.
 
+This ten-step list is a starting shape, not a substitute for real exit-condition design. Once the agent's actions carry real cost or can't be undone, harden this into a proper `loop/LOOP.md` in this repository: pick an archetype, and replace "continue, hand off, escalate, or stop according to the decision rules" with exit conditions that are wired, not just named.
+
 ## Phase 5: Add supporting files
 
 Create only what the design requires:

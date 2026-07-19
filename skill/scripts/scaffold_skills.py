@@ -43,6 +43,18 @@ import json
 import sys
 from pathlib import Path
 
+def yaml_quote(s):
+    """Double-quoted YAML scalar, safe for any content. Stdlib only, no
+    PyYAML dependency. Plain (unquoted) YAML scalars break on embedded
+    colons, leading quotes, or several other characters that show up
+    routinely in real skill descriptions - the field this is quoting is
+    the one place a colon or a quoted trigger phrase is most likely to
+    appear, per SKILL.md Phase 3. Always quoting removes the ambiguity
+    instead of trying to detect which strings need it."""
+    escaped = s.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+    return f'"{escaped}"'
+
+
 SKILL_TEMPLATE = """---
 name: {name}
 description: {description}
@@ -152,8 +164,8 @@ def scaffold_one(spec, out_dir):
     resources_section = build_resources_section(refs, scripts, assets)
     (root / "SKILL.md").write_text(
         SKILL_TEMPLATE.format(
-            name=name,
-            description=description,
+            name=yaml_quote(name),
+            description=yaml_quote(description),
             title=titleize(name),
             resources_section=resources_section,
         )

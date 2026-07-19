@@ -165,7 +165,7 @@ Define one owner for the overall goal and one owner for each active task. Agents
 
 Prevent common failures:
 
-- **Delegation loops:** Record the delegation chain and limit repeated reassignment.
+- **Delegation loops:** Record the delegation chain and limit repeated reassignment. This record has to be shared state the whole chain reads and writes to - the goal's durable state, not a counter private to any one agent. A per-agent counter resets every time the goal bounces to a different agent and back, so the cap never actually fires; a shared bounce count, incremented on every handoff and read by whichever agent is about to re-delegate, is what makes the limit real.
 - **Duplicate action:** Use task identifiers, locks, or status checks before acting.
 - **Conflicting authority:** Give each decision one final owner.
 - **Context flooding:** Send only the handoff payload, not every agent's full history.

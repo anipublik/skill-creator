@@ -1,111 +1,50 @@
-# Skill and Agent Forge
+# everythingAI
 
-This repository contains two portable builders:
+A running collection of portable AI builders. Each one is a self-contained playbook you hand to any capable AI to help you build a specific kind of thing well, instead of re-explaining the same design discipline from scratch every time.
 
-- `skill/` helps you turn knowledge, workflows, and repeated tasks into reusable AI skills.
-- `agent/` helps you turn a role, goal, or set of responsibilities into a focused AI agent with clear tools, permissions, boundaries, and handoffs.
+This isn't a tightly matched set of pairs. It's a dumping ground with a standard, not a framework with a fixed shape. New builders get added as they're needed. The only rule is every builder follows the same internal pattern, described below, so the collection stays usable instead of turning into ten one-off folders that don't share a grammar.
 
-Use either folder on its own, or use both to build an agent that is composed from reusable skills.
+See `CATALOG.md` for the current index.
 
-## Skill or agent?
+## What's in a builder
 
-A skill and an agent are not interchangeable.
+Every folder in this repo is a builder: a meta-playbook whose job is to help you produce another artifact - a skill, an agent, a loop, a graph, whatever comes next. At minimum, a builder has one file (`SKILL.md`, `AGENT.md`, `LOOP.md`, `GRAPH.md` - named for what it produces) with a metadata block and a phased playbook. Most also have:
 
-| | Skill | Agent |
-|---|---|---|
-| Main question | How should this task be done? | Who owns this outcome and what may it do? |
-| Purpose | Reusable expertise for a type of task | Ongoing responsibility for a goal |
-| Behavior | Runs when invoked | Observes, decides, acts, verifies, and stops or escalates |
-| Usually contains | Instructions, references, scripts, assets | Mission, responsibilities, skills, workflows, tools, state, boundaries, handoffs |
-| Best for | Reviewing code, parsing invoices, writing reports | Managing releases, handling support cases, coordinating an operational process |
+- `references/` - deep detail, loaded only when the playbook points to it.
+- `templates/` - starter files to copy instead of writing from a blank page.
+- `scripts/` - deterministic checks or scaffolding, run rather than reasoned through by hand each time.
 
-Choose a **skill** when you need repeatable know-how. Choose an **agent** when something must own an outcome across multiple steps, select capabilities, operate tools, and work within explicit authority.
+Load the main file into your AI tool of choice, or hand it the whole folder, and describe what you're trying to build.
 
-Do not create an agent for every prompt. If the work is one-shot and needs no tools, state, approvals, or ongoing decisions, a skill is simpler and easier to reuse.
+## What's here now
 
-### How they work together
+- **`skill/`** - turns a rough idea, workflow, or SOP into a reusable `SKILL.md`: know-how an AI can follow the same way every time. Answers *how should this task be done*.
+- **`agent/`** - turns a role or a set of responsibilities into an `AGENT.md`: something that owns a goal over time, makes decisions, uses tools within limits, and knows when to stop or hand off. Answers *who owns this outcome and what may it do*.
+- **`loop/`** - hardens the internal iteration of a single unit of work into a `LOOP.md`: an archetype, a round, and exit conditions that are wired, not just named. Answers *how does one node converge through repeated action*.
+- **`graph/`** - wires multiple nodes - agents, loops, skills, tools - into a `GRAPH.md`: explicit routing, parallel branches, shared state, and cycle budgets. Answers *how do several nodes cooperate to produce an outcome none of them owns alone*.
 
-Agents should compose skills instead of copying their instructions. For example:
+Skill and agent are about content: what kind of thing you're building and who's responsible for it. Loop and graph are about execution: how it actually runs once you press go, inside one node and across many. They're not the same axis, and this repo doesn't pretend they are - it just puts all four in one place because you need all four eventually.
 
-```text
-release-manager agent
-├── release-notes skill
-├── risk-review skill
-├── production-release workflow
-└── rollback workflow
-```
+## How they connect
 
-The agent owns the release outcome. Skills explain how to perform specific tasks. Workflows preserve required order, checks, and approvals.
+- An agent's operating loop is a loop. Once an agent's actions carry real cost or can't be undone, write that loop as a proper `LOOP.md` instead of leaving it as a vague list of steps.
+- An agent team is a graph. The handoffs each `AGENT.md` already defines and a `GRAPH.md`'s edges are the same contract seen from two angles - keep them in sync rather than defining the same thing twice.
+- A loop is often one node inside a graph, wired back to itself. A retry or replan that spans more than one node is a graph cycle, not a loop, and needs a budget of its own.
+- A skill can be the thing a graph's skill node runs, or the thing a loop's round invokes on each pass.
 
-## Repository structure
-
-```text
-skill-forge/
-├── skill/
-│   ├── SKILL.md                       # Playbook for designing one skill or a skill library
-│   ├── references/
-│   │   ├── anatomy.md                 # Skill layouts and progressive disclosure
-│   │   ├── descriptions.md            # Trigger descriptions and collision testing
-│   │   └── portability.md             # Cross-platform design and fallbacks
-│   ├── templates/
-│   │   ├── SKILL.template.md
-│   │   ├── reference.template.md
-│   │   └── script.template.py
-│   └── scripts/
-│       ├── scaffold_skills.py         # Batch skill scaffolder
-│       └── example_specs.json         # Example input for the scaffolder
-├── agent/
-│   ├── AGENT.md                       # Playbook for designing one agent or an agent system
-│   ├── references/
-│   │   └── anatomy.md                 # Tools, state, handoffs, composition, and portability
-│   └── templates/
-│       └── AGENT.template.md          # Starter agent operating contract
-└── README.md
-```
-
-## Use the skill creator
-
-Load `skill/SKILL.md` into your AI tool or upload the entire `skill/` folder. If a registry expects `SKILL.md` at the package root, upload the `skill/` folder itself rather than the whole repository.
-
-Use requests such as:
-
-- "Turn this workflow into a reusable skill."
-- "Package this process so an AI follows it consistently."
-- "Build a skill for each of these SOPs."
-- "Create a shared skill library for the team."
-
-The creator interviews you, chooses the smallest useful layout, writes the files, tests realistic prompts, and packages the result. It also handles batches, naming consistency, and trigger collisions across a skill library.
-
-## Use the agent creator
-
-Load `agent/AGENT.md` into your AI tool or provide the entire `agent/` folder. Then describe the role or outcome you want the agent to own.
-
-Use requests such as:
-
-- "Build a release manager agent."
-- "Turn this support role into an AI agent."
-- "Create an agent that reviews invoices and escalates exceptions."
-- "Design a team of agents for this operational process."
-
-The creator defines the agent's mission, autonomy, tools, permissions, skills, workflows, state, approval gates, failure recovery, and handoffs. It tests normal cases as well as missing data, tool failures, boundary violations, and escalation paths.
-
-`AGENT.md` is this repository's portable source format. Agent platforms do not all use the same filename or schema, so the final package may need a thin adapter for the target platform.
-
-## Templates and batch scaffolding
-
-Copy `skill/templates/SKILL.template.md` when you already understand the skill and only need the file structure. Copy `agent/templates/AGENT.template.md` when you already understand the role and need a structured operating contract.
-
-To scaffold several skills from JSON:
-
-```bash
-python3 skill/scripts/scaffold_skills.py skill/scripts/example_specs.json --out ./generated-skills
-```
-
-The script creates starter folders. It does not replace the interview, writing, collision review, or testing in `skill/SKILL.md`.
+None of these replace the others. Use the smallest one that actually fits before reaching for the next.
 
 ## Portability
 
-The files use capabilities and plain-language contracts instead of depending on one vendor's tool names. When a target platform has its own format, keep the portable source and render an adapter for that platform. If the platform lacks required permissions, approvals, state, or handoff controls, reduce the agent's autonomy rather than silently dropping a safeguard.
+Every builder here targets capabilities, not one vendor's tool names or file formats. `SKILL.md`, `AGENT.md`, `LOOP.md`, and `GRAPH.md` are portable source documents. If your target platform wants a different filename, schema, or config format, render a thin adapter for it during packaging and keep the portable file as the source of truth. Don't drop a safeguard - a budget, a boundary, an approval gate - just because the target platform makes it inconvenient to express. Reduce scope or flag the gap instead.
+
+## Adding a new builder
+
+1. Name it for what it produces, lowercase, one word if possible.
+2. Write the main file with the same shape the existing builders use: metadata block, phases, a packaging section, a resources list at the end.
+3. Only add `references/`, `templates/`, or `scripts/` if there's real reusable detail. Don't manufacture structure a single-file builder doesn't need.
+4. Add it to `CATALOG.md`.
+5. If it relates to an existing builder (composes with it, replaces part of it, sits above or below it), say so explicitly in both files. That's how this stays a system instead of a pile.
 
 ## License
 
